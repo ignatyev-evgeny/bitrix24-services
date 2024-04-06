@@ -1,0 +1,16 @@
+name: Update Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  pull_changes:
+    runs-on: self-hosted
+
+    steps:
+    - name: Pull Changes
+      run: |
+        cd /path/to/your/repository
+        git fetch origin
+        git checkout main
+        git reset --hard origin/main
