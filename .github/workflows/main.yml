@@ -8,9 +8,14 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Pull Changes
+    - name: Update Server
       run: |
-        cd /path/to/your/repository
-        git fetch origin
-        git checkout main
+        cd /var/www/dev.ignatyev.pro/html
+        git fetch --all
         git reset --hard origin/main
+        php artisan migrate --force
+        # php artisan horizon:terminate
+        # php artisan scribe:generate
+        # php artisan horizon:publish
+        # php artisan storage:link
+        php artisan optimize
