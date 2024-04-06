@@ -13,6 +13,7 @@ jobs:
         cd /var/www/dev.ignatyev.pro/html
         git fetch --all
         git reset --hard origin/main
+        composer install
         php artisan migrate --force
         # php artisan horizon:terminate
         # php artisan scribe:generate
