@@ -1,7 +1,9 @@
 name: Update Server
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+    - main
 
 jobs:
   pull_changes:
