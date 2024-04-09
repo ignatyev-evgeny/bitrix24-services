@@ -1,0 +1,22 @@
+name: Update Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  pull_changes:
+    runs-on: self-hosted
+
+    steps:
+    - name: Update Server
+      run: |
+        cd /var/www/dev.ignatyev.pro/html
+        git fetch --all
+        git reset --hard origin/main
+        composer install
+        php artisan migrate --force
+        # php artisan horizon:terminate
+        # php artisan scribe:generate
+        # php artisan horizon:publish
+        # php artisan storage:link
+        php artisan optimize
