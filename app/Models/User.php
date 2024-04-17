@@ -11,36 +11,42 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
+        'auth_id',
+        'refresh_id',
+        'member_id',
+        'bitrix_id',
+        'active',
         'name',
+        'lastname',
+        'photo',
         'email',
+        'last_login',
+        'date_register',
+        'is_online',
+        'time_zone_offset',
+        'timestamp_x',
+        'last_activity_date',
+        'personal_gender',
+        'personal_birthday',
+        'user_type',
+        'uf_department',
+        'lang',
+        'portal',
+        'auth',
+        'member',
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
+    protected function casts(): array {
         return [
-            'email_verified_at' => 'datetime',
+            'uf_department' => 'array',
+            'auth' => 'array',
+            'member' => 'array',
             'password' => 'hashed',
         ];
     }
