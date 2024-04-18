@@ -17,6 +17,10 @@ class User extends Authenticatable
         'member_id',
         'bitrix_id',
         'active',
+        'is_admin',
+        'is_administrator',
+        'is_manager',
+        'active',
         'name',
         'lastname',
         'photo',
@@ -48,6 +52,9 @@ class User extends Authenticatable
             'auth' => 'array',
             'member' => 'array',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'is_administrator' => 'boolean',
+            'is_manager' => 'boolean',
         ];
     }
 }
