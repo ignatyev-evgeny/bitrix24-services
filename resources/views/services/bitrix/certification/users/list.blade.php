@@ -40,24 +40,24 @@
                             <div class="card-body">
                                 <table class="table table-bordered">
                                     <thead>
-                                    <tr>
-                                        <th class="text-center">#</th>
-                                        <th class="text-center">Bitrix ID</th>
-                                        <th class="text-center">{{ __('Статус') }}</th>
-                                        <th class="text-center">{{ __('Имя') }}</th>
-                                        <th class="text-center">{{ __('Пол') }}</th>
-                                        <th class="text-center">{{ __('День рождения') }}</th>
-                                        <th class="text-center">{{ __('Email') }}</th>
-                                        <th class="text-center">{{ __('Администратор') }}</th>
-                                        <th class="text-center">{{ __('Руководитель') }}</th>
-                                        <th class="text-center">{{ __('Подразделения') }}</th>
-                                        <th class="text-center">{{ __('Дата авторизации') }}</th>
-                                        <th class="text-center">{{ __('Дата регистрации') }}</th>
-                                        <th class="text-center">{{ __('Язык') }}</th>
-                                    </tr>
+                                        <tr>
+                                            <th class="text-center">#</th>
+                                            <th class="text-center">Bitrix ID</th>
+                                            <th class="text-center">{{ __('Статус') }}</th>
+                                            <th class="text-center">{{ __('Имя') }}</th>
+                                            <th class="text-center">{{ __('Пол') }}</th>
+                                            <th class="text-center">{{ __('День рождения') }}</th>
+                                            <th class="text-center">{{ __('Email') }}</th>
+                                            <th class="text-center">{{ __('Администратор') }}</th>
+                                            <th class="text-center">{{ __('Руководитель') }}</th>
+                                            <th class="text-center">{{ __('Подразделения') }}</th>
+                                            <th class="text-center">{{ __('Дата авторизации') }}</th>
+                                            <th class="text-center">{{ __('Дата регистрации') }}</th>
+                                            <th class="text-center">{{ __('Язык') }}</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                        @each('services.bitrix.certification.users.list.table.element', $users, 'user')
+                                        @each('services.bitrix.certification.users.list-table-element', $users, 'user')
                                     </tbody>
                                 </table>
                             </div>

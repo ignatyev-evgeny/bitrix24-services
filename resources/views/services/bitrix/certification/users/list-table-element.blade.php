@@ -7,7 +7,9 @@
     <td class="text-center">{{ $user['personal_gender'] }}</td>
     <td class="text-center">{{ $user['personal_birthday'] }}</td>
     <td class="text-center">{{ $user['email'] }}</td>
-    <td class="text-center">{{ $user['is_administrator'] }}</td>
+    <td class="text-center">
+        <input type="checkbox" name="my-checkbox" checked data-switch-manager @if($user['is_administrator']) data-status="true" @else data-status="false" @endif data-off-color="danger" data-on-color="success">
+    </td>
     <td class="text-center">
         <input type="checkbox" name="my-checkbox" checked data-switch-manager @if($user['is_manager']) data-status="true" @else data-status="false" @endif data-off-color="danger" data-on-color="success">
     </td>
