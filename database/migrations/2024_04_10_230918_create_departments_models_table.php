@@ -11,7 +11,6 @@ return new class extends Migration {
             $table->integer('bitrix_id');
             $table->foreignId('portal');
             $table->string('name');
-            $table->integer('parent')->nullable();
             $table->json('managers')->nullable();
             $table->softDeletes();
             $table->timestamps();
