@@ -24,9 +24,9 @@ return new class extends Migration
             $table->boolean('is_manager')->default(false);
             $table->string('name')->nullable();
             $table->string('photo')->nullable();
-            $table->string('email')->unique();
-            $table->string('phone_personal')->unique();
-            $table->string('phone_work')->unique();
+            $table->string('email')->nullable()->unique();
+            $table->string('phone_personal')->nullable()->unique();
+            $table->string('phone_work')->nullable()->unique();
             $table->json('departments')->nullable();
             $table->string('position')->nullable();
             $table->string('lang')->default('RU');
