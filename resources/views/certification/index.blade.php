@@ -19,12 +19,11 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Dashboard v3</h1>
+                        <h1 class="m-0">{{ __('Главная') }}</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item active">Dashboard v3</li>
+                            <li class="breadcrumb-item active">{{ __('Главная') }}</li>
                         </ol>
                     </div>
                 </div>
@@ -33,8 +32,27 @@
         <div class="content">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-lg-12">
-                        @dump(Auth::user())
+                    <div class="col-6">
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>{{ \App\Models\Bitrix\DepartmentsModel::getAllCount() }}</h3>
+                                <p>{{ __('Подразделений') }}</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="small-box bg-warning">
+                            <div class="inner">
+                                <h3>{{ \App\Models\User::getAllCount() }}</h3>
+                                <p>{{ __('Сотрудников') }}</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
