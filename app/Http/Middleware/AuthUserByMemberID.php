@@ -7,6 +7,7 @@ use Closure;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthUserByMemberID
@@ -20,9 +21,10 @@ class AuthUserByMemberID
         try {
             $user = User::where('member_id', $request->route()->parameter('member_id'))->first();
             if(empty($user)) throw new Exception(__('Пользователь не найден'));
-            Auth::loginUsingId($user->id);
+            Cache::put($request->route()->parameter('member_id'), $user, now()->addMinutes(config('session.lifetime')));
             return $next($request);
         } catch (Exception $exception) {
+            report($exception);
             abort(403, $exception->getMessage());
         }
     }
