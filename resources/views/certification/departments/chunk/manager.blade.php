@@ -1,1 +1,0 @@
-<option>{{ $manager->bitrix_id }} | {{ $manager->name }} | {{ $manager->email ?? 'NaN' }}</option>
