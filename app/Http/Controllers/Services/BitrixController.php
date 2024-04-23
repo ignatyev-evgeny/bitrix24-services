@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -32,6 +33,7 @@ class BitrixController extends Controller {
             if(empty($currentMember['member']['response']['ID']) || empty($currentMember['member']['local']['id'])) throw new Exception(__('Ошибка при получении или создании текущего пользователя'));
             $data['USER'] = $currentMember;
             $data['ADMIN'] = self::checkIsAdmin($data, $currentMember)['isAdmin'] ?? false;
+            Cache::put($data['MEMBER_ID'], User::find($currentMember['member']['local']['id']), now()->addMinutes(config('session.lifetime')));
             return redirect()->route('home', [
                 'member_id' => $data['MEMBER_ID']
             ]);
