@@ -91,6 +91,10 @@ class User extends Authenticatable
         return $this->is_support ? 1 : 0;
     }
 
+    public static function checkManagerInDepartment(int $departmentId, int $managerId): bool {
+        return DepartmentsModel::whereId($departmentId)->whereJsonContains('managers', "$managerId")->exists();
+    }
+
     public function getBitrixProfileLinkAttribute(): ?string {
         return "<a target='_blank' href='https://{$this->portalObject->domain}/company/personal/user/{$this->bitrix_id}/'>$this->bitrix_id</a>";
     }
