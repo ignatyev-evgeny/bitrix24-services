@@ -15,5 +15,21 @@ class DepartmentsModel extends Model {
         'portal',
         'name',
         'parent',
+        'managers',
     ];
+
+    protected function casts(): array {
+        return [
+            'managers' => 'array',
+        ];
+    }
+
+    public static function getAllCount(): int {
+        return DepartmentsModel::count();
+    }
+
+    public function departmentNameByID($departmentID, int $portalID): string {
+        return $departmentID ? DepartmentsModel::where('portal', $portalID)->where('bitrix_id', $departmentID)->first()->name : __('Не указан');
+    }
+
 }
