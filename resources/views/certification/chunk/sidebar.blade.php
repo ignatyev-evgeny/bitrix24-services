@@ -28,16 +28,22 @@
                         <p>{{ __('Сотрудники') }}</p>
                     </a>
                 </li>
+{{--                <li class="nav-item">--}}
+{{--                    <a href="{{ route('get.tests', ['member_id' => $auth->member_id]) }}" class="nav-link @if(Route::getCurrentRoute()->getName() == 'get.tests') active @endif">--}}
+{{--                        <i class="nav-icon fas fa-edit"></i>--}}
+{{--                        <p>{{ __('Тесты') }}</p>--}}
+{{--                    </a>--}}
+{{--                </li>--}}
+{{--                <li class="nav-item">--}}
+{{--                    <a href="{{ route('get.сertifications', ['member_id' => $auth->member_id]) }}" class="nav-link @if(Route::getCurrentRoute()->getName() == 'get.сertifications') active @endif">--}}
+{{--                        <i class="nav-icon fas fa-stamp"></i>--}}
+{{--                        <p>{{ __('Аттестации') }}</p>--}}
+{{--                    </a>--}}
+{{--                </li>--}}
                 <li class="nav-item">
-                    <a href="{{ route('get.tests', ['member_id' => $auth->member_id]) }}" class="nav-link @if(Route::getCurrentRoute()->getName() == 'get.tests') active @endif">
-                        <i class="nav-icon fas fa-edit"></i>
-                        <p>{{ __('Тесты') }}</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('get.сertifications', ['member_id' => $auth->member_id]) }}" class="nav-link @if(Route::getCurrentRoute()->getName() == 'get.сertifications') active @endif">
-                        <i class="nav-icon fas fa-stamp"></i>
-                        <p>{{ __('Аттестации') }}</p>
+                    <a href="{{ route('questions.list', ['member_id' => $auth->member_id]) }}" class="nav-link @if(Route::getCurrentRoute()->getName() == 'questions.list') active @endif">
+                        <i class="nav-icon fas fa-question"></i>
+                        <p>{{ __('Вопросы') }}</p>
                     </a>
                 </li>
             </ul>
