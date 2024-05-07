@@ -1,0 +1,14 @@
+.tag {
+    background-color: green;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.bootstrap-tagsinput {
+    line-height: 38px !important;
+}
+
+.bigInput {
+    line-height: 48px;
+    height: 48px
+}
