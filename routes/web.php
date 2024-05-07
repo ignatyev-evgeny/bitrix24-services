@@ -4,6 +4,7 @@ use App\Http\Controllers\DepartmentsController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\QuestionsController;
 use App\Http\Controllers\Services\BitrixController;
+use App\Http\Controllers\TestsController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\UserIsActiveMiddleware;
 use App\Http\Middleware\UserIsAdminMiddleware;
@@ -44,4 +45,12 @@ Route::prefix('questions')->name('questions.')->group(function () {
     Route::post('/store/{member_id}', [QuestionsController::class, 'store'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('store');
     Route::get('/show/{question}/{member_id}', [QuestionsController::class, 'show'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('show');
     Route::post('/update/{question}/{member_id}', [QuestionsController::class, 'update'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('update');
+});
+
+Route::prefix('tests')->name('tests.')->group(function () {
+    Route::get('/list/{member_id}', [TestsController::class, 'list'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('list');
+    Route::get('/create/{member_id}', [TestsController::class, 'create'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('create');
+    Route::post('/store/{member_id}', [TestsController::class, 'store'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('store');
+    Route::get('/show/{test}/{member_id}', [TestsController::class, 'show'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('show');
+    Route::post('/update/{test}/{member_id}', [TestsController::class, 'update'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('update');
 });

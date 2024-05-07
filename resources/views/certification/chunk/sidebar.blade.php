@@ -41,9 +41,15 @@
 {{--                    </a>--}}
 {{--                </li>--}}
                 <li class="nav-item">
-                    <a href="{{ route('questions.list', ['member_id' => $auth->member_id]) }}" class="nav-link @if(Route::getCurrentRoute()->getName() == 'questions.list') active @endif">
+                    <a href="{{ route('questions.list', ['member_id' => $auth->member_id]) }}" class="nav-link @if(in_array(Route::getCurrentRoute()->getName(), ['questions.list', 'questions.create', 'questions.show'])) active @endif">
                         <i class="nav-icon fas fa-question"></i>
                         <p>{{ __('Вопросы') }}</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('tests.list', ['member_id' => $auth->member_id]) }}" class="nav-link @if(in_array(Route::getCurrentRoute()->getName(), ['tests.list', 'tests.create', 'tests.show'])) active @endif">
+                        <i class="nav-icon fas fa-spell-check"></i>
+                        <p>{{ __('Тесты') }}</p>
                     </a>
                 </li>
             </ul>
