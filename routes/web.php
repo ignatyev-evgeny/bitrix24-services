@@ -40,4 +40,8 @@ Route::prefix('departments')->name('departments.')->group(function () {
 
 Route::prefix('questions')->name('questions.')->group(function () {
     Route::get('/list/{member_id}', [QuestionsController::class, 'list'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('list');
+    Route::get('/create/{member_id}', [QuestionsController::class, 'create'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('create');
+    Route::post('/store/{member_id}', [QuestionsController::class, 'store'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('store');
+    Route::get('/show/{question}/{member_id}', [QuestionsController::class, 'show'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('show');
+    Route::post('/update/{question}/{member_id}', [QuestionsController::class, 'update'])->middleware([UserIsActiveMiddleware::class, UserIsAdminOrSupportMiddleware::class])->name('update');
 });
