@@ -14,7 +14,7 @@ class DepartmentsController extends Controller {
         try {
             $auth = Cache::get($memberId);
             return view('certification.departments.list', [
-                'departments' => DepartmentsModel::where('portal', $auth->portal)->paginate(10),
+                'departments' => DepartmentsModel::where('portal', $auth->portal)->paginate(25),
                 'managers' => User::with('portalObject')->where('portal', $auth->portal)->get(),
                 'auth' => Cache::get($memberId)
             ]);
