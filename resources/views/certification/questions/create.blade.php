@@ -44,7 +44,6 @@
                 <div class="row">
                     <div class="col-12">
                         <form method="POST" id="newQuestionForm" multiple="" action="{{ route('questions.store', ['member_id' => $auth->member_id]) }}">
-                            @csrf
                             <input type="hidden" name="portal" value="{{ $auth->portal }}">
                             <input type="hidden" class="serializedTags" name="serializedTags" value="">
                             <div class="card card-info">
