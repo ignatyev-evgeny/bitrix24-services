@@ -1,3 +1,11 @@
+body {
+    font-family: "Montserrat", sans-serif !important;
+}
+
+label {
+    font-weight: 400 !important;
+}
+
 .tag {
     background-color: green;
     padding: 5px;
@@ -11,4 +19,22 @@
 .bigInput {
     line-height: 48px;
     height: 48px
+}
+
+.border-right-2px-black {
+    border-right: 2px solid black;
+}
+
+.select2-container .select2-selection--single {
+    height: 38px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+}
+
+.lh-38-px {
+    line-height: 38px !important;;
+    font-weight: 700;
+    font-size: 20px;
 }
