@@ -13,7 +13,7 @@ class UserIsActiveMiddleware {
         try {
             $auth = Cache::get($request->route()->parameter('member_id'));
             if(empty($auth)) return response()->view('errorAuth');
-            if(!$auth->active && !$auth->is_admin) abort(403, __('Доступ запрещен. Пользователь не активирован'));
+            if(!$auth->active && !$auth->is_admin) return response()->view('errorAccess');
             return $next($request);
         } catch (Exception $exception) {
             report($exception);

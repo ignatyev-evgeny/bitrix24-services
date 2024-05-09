@@ -6,10 +6,10 @@
         <div class="content-header"></div>
         <section class="content mt-5">
             <div class="error-page">
-                <h2 class="headline text-danger">401</h2>
+                <h2 class="headline text-danger">403</h2>
                 <div class="error-content">
                     <h3>{{ __('Хьюстон, у нас проблемы!') }}</h3>
-                    <p>{{ __('Ошибка авторизации. Сессия завершена, требуется повторная авторизация') }}</p>
+                    <p>{!! __("Нет доступа <br> или пользователь не активирован") !!}</p>
                 </div>
             </div>
         </section>
