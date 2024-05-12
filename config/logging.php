@@ -127,6 +127,12 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'bitrixRequest' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Bitrix/'.date('d.m.Y').'/request.log'),
+            'level' => 'debug',
+        ],
+
     ],
 
 ];

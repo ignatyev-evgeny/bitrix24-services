@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class BitrixController extends Controller {
     public function install(Request $request) {
@@ -171,7 +172,9 @@ class BitrixController extends Controller {
             $start = 0;
             $response['result'] = $response['time'] = [];
             do {
+                self::log("Request URL [{$endpoint}] -> https://{$data['DOMAIN']}/rest/$endpoint.json?auth={$data['AUTH_ID']}&start=".$start);
                 $currentResponse = Http::get("https://{$data['DOMAIN']}/rest/$endpoint.json?auth={$data['AUTH_ID']}&start=".$start)->json();
+                self::log("Request Response [{$endpoint}] -> ".json_encode($currentResponse).PHP_EOL);
                 $fullResponse[] = $currentResponse;
                 $start = !empty($currentResponse['next']) ? $currentResponse['next'] : 0;
             } while (!empty($currentResponse['next']) && is_array($currentResponse['result']));
@@ -187,5 +190,9 @@ class BitrixController extends Controller {
             report($exception);
             return false;
         }
+    }
+
+    private function log($message) {
+        Log::channel('bitrixRequest')->debug($message);
     }
 }
