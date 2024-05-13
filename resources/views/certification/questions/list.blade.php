@@ -158,6 +158,7 @@
 
             request.fail(function( data ) {
                 $('.confirmDeleteQuestion').prop('disabled', false);
+                $('.closeDeleteModal').click();
                 toastr.error(data.responseJSON.message);
             });
 
