@@ -32,44 +32,43 @@ class QuestionsController extends Controller {
         }
     }
 
-    public function store(Request $request, $memberId) {
-        try {
+    public function store(Request $request) {
 
-            $data = $request->validate([
-                'portal' => ['required', 'integer', 'exists:bitrix_portals,id'],
-                'title' => ['required', 'string'],
-                'text' => ['required', 'string'],
-                'serializedTags' => ['nullable', 'string'],
-                'answerText' => ['required', 'array'],
-                'correctAnswer' => ['required', 'array'],
-            ]);
+        $data = $request->validate([
+            'portal' => ['required', 'integer', 'exists:bitrix_portals,id'],
+            'title' => ['required', 'string'],
+            'text' => ['required', 'string'],
+            'time_min' => ['required', 'integer', 'min:0', 'max:59'],
+            'time_sec' => ['required', 'integer', 'min:0', 'max:59'],
+            'serializedTags' => ['nullable', 'string'],
+            'answerText' => ['required', 'array'],
+            'correctAnswer' => ['required', 'array'],
+        ]);
 
-            $answerArr = [];
-            foreach ($data['answerText'] as $key => $answer) {
-                $answerArr[$key] = [
-                    'title' => $answer,
-                    'correct' => isset($data['correctAnswer'][$key]),
-                ];
-            }
-
-            $dataCreate = [
-                'portal' => $data['portal'],
-                'title' => $data['title'],
-                'text' => $data['text'],
-                'tags' => !empty($data['serializedTags']) ? explode(',', $data['serializedTags']) : null,
-                'answers' => $answerArr,
+        $answerArr = [];
+        foreach ($data['answerText'] as $key => $answer) {
+            $answerArr[$key] = [
+                'title' => $answer,
+                'correct' => isset($data['correctAnswer'][$key]),
             ];
-
-            Questions::create($dataCreate);
-
-            return redirect()->route('questions.list', [
-                'member_id' => $memberId
-            ]);
-
-        } catch (Exception $exception) {
-            report($exception);
-            abort($exception->getCode(), $exception->getMessage());
         }
+
+        $dataCreate = [
+            'portal' => $data['portal'],
+            'time' => $data['time_min'] * 60 + $data['time_sec'],
+            'title' => $data['title'],
+            'text' => $data['text'],
+            'tags' => !empty($data['serializedTags']) ? explode(',', $data['serializedTags']) : null,
+            'answers' => $answerArr,
+        ];
+
+        $newQuestion = Questions::create($dataCreate);
+
+        return response()->json([
+            'success' => true,
+            'question' => $newQuestion->toArray()
+        ]);
+
     }
 
     public function show(Questions $question, $memberId) {

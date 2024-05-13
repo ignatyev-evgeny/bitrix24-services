@@ -43,28 +43,48 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
-                        <form method="POST" id="newQuestionForm" multiple="" action="{{ route('questions.store', ['member_id' => $auth->member_id]) }}">
+                        <form method="POST" id="newQuestionForm" multiple="">
                             <input type="hidden" name="portal" value="{{ $auth->portal }}">
                             <input type="hidden" class="serializedTags" name="serializedTags" value="">
                             <div class="card card-info">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-6">
-                                            <div class="input-group mb-3">
-                                                <input type="text" class="form-control bigInput" name="title" placeholder="{{ __('Наименование вопроса') }}">
+                                            <div class="row">
+                                                <div class="col-8">
+                                                    <div class="form-group">
+                                                        <label>{{ __('Наименование вопроса') }}</label>
+                                                        <input type="text" class="form-control" name="title">
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <div class="form-group">
+                                                        <label>{{ __('Время на ответ') }}</label>
+                                                        <div class="row">
+                                                            <div class="col-5">
+                                                                <input type="number" min="0" max="59" value="0" class="form-control" name="time_min">
+                                                            </div>
+                                                            <div class="col-1 text-center lh-38-px">:</div>
+                                                            <div class="col-6">
+                                                                <input type="number" min="0" max="59" value="0" class="form-control" name="time_sec">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="input-group">
+                                                        <label>{{ __('Используемые теги') }}</label>
+                                                        <input type="text" class="form-control tagsinput" data-role="tagsinput">
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <textarea id="questionText" name="text"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control tagsinput" data-role="tagsinput">
-                                                    </div>
-                                                </div>
-                                            </div>
                                             <div class="row mb-2">
                                                 <div class="col-6">
                                                     <button type="button" data-answer="0" class="btn btn-success addAnswer btn-block">{{ __('Добавить вариант ответа') }}</button>
@@ -89,6 +109,12 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
+
+                                    <div class="alert alert-success alert-dismissible d-none alertSuccessBlock">
+                                        <h5>{{ __('Успешно') }}</h5>
+                                        {{ __('Вопрос был успешно создан') }}
+                                    </div>
+
                                     <button type="button" class="btn btn-success w-100 btnSave">{{ __('Сохранить вопрос') }}</button>
                                 </div>
                             </div>
@@ -132,10 +158,32 @@
                 }
             })
 
-            $('.btnSave').on('click', function () {
+            $('.btnSave').click(function() {
+
                 $('.serializedTags').val($(".tagsinput").val());
-                $('#newQuestionForm').submit();
-            })
+
+                $(this).prop('disabled', true);
+
+                var request = $.ajax({
+                    url: "{{ route('questions.store', ['member_id' => $auth->member_id]) }}",
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: $('form#newQuestionForm').serialize(),
+                })
+
+                request.done(function( data ) {
+                    $('.btnSave').addClass('d-none');
+                    $('.alertSuccessBlock').removeClass('d-none');
+                    console.log(data.responseJSON.message);
+                });
+
+                request.fail(function( data ) {
+                    $('.alertSuccessBlock').addClass('d-none');
+                    $('.btnSave').prop('disabled', false);
+                    toastr.error(data.responseJSON.message);
+                });
+
+            });
 
         });
     </script>

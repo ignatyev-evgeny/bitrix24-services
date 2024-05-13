@@ -54,6 +54,7 @@
                                         <tr>
                                             <th class="text-center">#</th>
                                             <th class="text-center">{{ __('Название') }}</th>
+                                            <th class="text-center">{{ __('Время на ответ') }}</th>
                                             <th class="text-center">{{ __('Теги') }}</th>
                                             <th class="text-center">{{ __('Управление') }}</th>
                                         </tr>
@@ -64,6 +65,7 @@
                                                 <tr>
                                                     <td class="text-center align-middle">{{ $question->id }}</td>
                                                     <td class="text-center align-middle">{{ $question->title }}</td>
+                                                    <td class="text-center align-middle">{{ $question->format_time }}</td>
                                                     <td class="text-center align-middle">
                                                         @isset($question->tags)
                                                             @foreach($question->tags as $tag)
