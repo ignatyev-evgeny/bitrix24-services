@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Questions;
+use App\Models\Tests;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -141,8 +142,36 @@ class QuestionsController extends Controller {
         }
     }
 
-    public function destroy(Questions $questions) {
-        $questions->delete();
-        return response()->json();
+    public function destroy(Questions $question, $memberId) {
+
+        if(empty($question)) {
+            return response()->json([
+                'message' => __('Вопрос не существует')
+            ], 404);
+        }
+
+        $auth = Cache::get($memberId);
+
+        if($auth->portal != $question->portal) {
+            return response()->json([
+                'message' => __('Нет доступа к удалению вопроса')
+            ], 403);
+        }
+
+        if (self::searchQuestionOnTests($question)) {
+            return response()->json([
+                'message' => __('Запрещено удаление вопроса который используется в одном или нескольких тестах')
+            ], 403);
+        }
+
+        $question->delete();
+
+        return response()->json([
+            'message' => __('Вопрос успешно удален')
+        ]);
+    }
+
+    private function searchQuestionOnTests(object $question) {
+        return Tests::whereJsonContains('questions', ['id' => $question->id])->exists();
     }
 }

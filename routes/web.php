@@ -45,6 +45,7 @@ Route::prefix('questions')->name('questions.')->group(function () {
     Route::post('/store/{member_id}', [QuestionsController::class, 'store'])->middleware([UserIsAdminOrSupportMiddleware::class])->name('store');
     Route::get('/show/{question}/{member_id}', [QuestionsController::class, 'show'])->middleware([UserIsAdminOrSupportMiddleware::class])->name('show');
     Route::post('/update/{question}/{member_id}', [QuestionsController::class, 'update'])->middleware([UserIsAdminOrSupportMiddleware::class])->name('update');
+    Route::post('/destroy/{question}/{member_id}', [QuestionsController::class, 'destroy'])->middleware([UserIsAdminOrSupportMiddleware::class])->name('destroy');
 });
 
 Route::prefix('tests')->name('tests.')->group(function () {

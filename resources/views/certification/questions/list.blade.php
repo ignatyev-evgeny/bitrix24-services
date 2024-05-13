@@ -62,7 +62,7 @@
                                     <tbody>
                                         @if(!empty($questions))
                                             @foreach($questions as $question)
-                                                <tr>
+                                                <tr class="tr-{{ $question->id }}">
                                                     <td class="text-center align-middle">{{ $question->id }}</td>
                                                     <td class="text-center align-middle">{{ $question->title }}</td>
                                                     <td class="text-center align-middle">{{ $question->format_time }}</td>
@@ -114,7 +114,7 @@
         <div class="modal-dialog">
             <div class="modal-content bg-danger">
                 <div class="modal-header">
-                    <h4 class="modal-title">{{ __('Вы уверены что хотите удалить вопрос?')  }}</h4>
+                    <h5 class="modal-title">{{ __('Вы уверены что хотите удалить вопрос?')  }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -124,8 +124,8 @@
                     <p>{{ __('Удаление вопросы будет разрешено только в том случае, если выбранный вопрос не используется ни в одном из тестов. Это условие будет проверено на следующем этапе удаления вопроса.') }}</p>
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-outline-light" data-dismiss="modal">{{ __('Закрыть') }}</button>
-                    <button type="button" class="btn btn-outline-light">{{ __('Да, удалить!') }}</button>
+                    <button type="button" class="btn btn-outline-light closeDeleteModal" data-dismiss="modal">{{ __('Закрыть') }}</button>
+                    <button type="button" data-question-id="" class="btn btn-outline-light confirmDeleteQuestion">{{ __('Да, удалить!') }}</button>
                 </div>
             </div>
         </div>
@@ -134,8 +134,35 @@
     <script>
         $('.openModalDeleteQuestion').on('click', function () {
             var questionTitle = $(this).attr('data-question-title');
+            var questionID = $(this).attr('data-question-id');
             $('#questionTitle').html(questionTitle);
+            $('.confirmDeleteQuestion').attr('data-question-id', questionID);
         })
+
+        $('.confirmDeleteQuestion').on('click', function () {
+            var questionID = $(this).attr('data-question-id');
+            $(this).prop('disabled', true);
+
+            var request = $.ajax({
+                url: "/questions/destroy/"+questionID+"/{{ $auth->member_id }}",
+                type: 'POST',
+                dataType: 'JSON',
+            })
+
+            request.done(function( data ) {
+                $('.confirmDeleteQuestion').prop('disabled', false);
+                $('.closeDeleteModal').click();
+                $('.tr-'+questionID).remove();
+                toastr.success(data.message);
+            });
+
+            request.fail(function( data ) {
+                $('.confirmDeleteQuestion').prop('disabled', false);
+                toastr.error(data.responseJSON.message);
+            });
+
+        })
+
     </script>
 
     @include('certification.chunk.footer')
