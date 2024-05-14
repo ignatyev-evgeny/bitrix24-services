@@ -82,7 +82,7 @@
                                                                     <i class="fas fa-edit"></i>
                                                                 </button>
                                                             </a>
-                                                            <button type="button" data-question-id="{{ $question->id }}" data-question-title="{{ $question->title }}" data-toggle="modal" data-target="#modalDeleteQuestion" class="btn openModalDeleteQuestion btn-danger">
+                                                            <button type="button" data-question-id="{{ $question->id }}" data-question-title="{{ $question->title }}" data-toggle="modal" data-target="#modalDeleteQuestion" class="btn openModalDeleteQuestion btn-danger ml-2">
                                                                 <i class="fas fa-trash-alt"></i>
                                                             </button>
                                                         </div>
