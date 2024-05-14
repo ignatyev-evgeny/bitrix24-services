@@ -81,9 +81,14 @@
                                                                 <i class="fas fa-edit"></i>
                                                             </button>
                                                         </a>
-                                                        <button type="button" data-test-id="{{ $test->id }}" data-test-title="{{ $test->title }}" data-toggle="modal" data-target="#modalDeleteTest" class="btn openModalDeleteTest btn-danger">
-                                                            <i class="fas fa-trash-alt"></i>
-                                                        </button>
+                                                        <a href="{{ route('tests.destroy', ['member_id' => $auth->member_id, 'test' => $test->id]) }}">
+                                                            <button type="button" class="btn btn-danger ml-2">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </a>
+{{--                                                        <button type="button" data-test-id="{{ $test->id }}" data-test-title="{{ $test->title }}" data-toggle="modal" data-target="#modalDeleteTest" class="btn openModalDeleteTest btn-danger">--}}
+{{--                                                            <i class="fas fa-trash-alt"></i>--}}
+{{--                                                        </button>--}}
                                                     </div>
                                                 </td>
                                             </tr>

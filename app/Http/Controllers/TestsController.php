@@ -41,8 +41,8 @@ class TestsController extends Controller {
         $data = $request->validate([
             'portal' => ['required', 'integer', 'exists:bitrix_portals,id'],
             'title' => ['required', 'string'],
-            'maximum_time_min' => ['required', 'integer', 'min:0', 'max:59'],
-            'maximum_time_sec' => ['required', 'integer', 'min:0', 'max:59'],
+            'maximum_time_min' => ['required', 'string', 'min:0', 'max:59'],
+            'maximum_time_sec' => ['required', 'string', 'min:0', 'max:59'],
             'test_maximum_score' => ['required', 'integer', 'min:1'],
             'test_passing_score' => ['required', 'integer', 'min:1'],
             'descriptions' => ['nullable', 'string'],
@@ -54,7 +54,24 @@ class TestsController extends Controller {
             'ranging' => ['nullable', 'string'],
         ]);
 
-        if($data['test_maximum_score'] < $data['test_passing_score']) {
+        $questionsTotalScore = 0;
+        foreach ($data['question'] as $key => $question) {
+
+            if ($question == 'null') {
+                return response()->json([
+                    'message' => __('Выбор вопроса является обязательным')
+                ],400);
+            }
+
+            $questions[] = [
+                'id' => (int) $question,
+                'score' => (int) $data['question_score'][$key],
+                'time' => ((int) $data['question_maximum_time_min'][$key] ?? 0) * 60 + ((int) $data['question_maximum_time_sec'][$key] ?? 0)
+            ];
+            $questionsTotalScore += (int) $data['question_score'][$key];
+        }
+
+        if($questionsTotalScore < $data['test_passing_score']) {
             return response()->json([
                 'message' => __('Максимальный балл за тест, не может быть меньше чем проходной балл')
             ],400);
@@ -63,12 +80,6 @@ class TestsController extends Controller {
         if(count($data['question_score']) != count($data['question'])) {
             return response()->json([
                 'message' => __('Запрещено публиковать вопросы без оценки и\или указывать оценку без указания вопроса.')
-            ],400);
-        }
-
-        if(array_sum($data['question_score']) != $data['test_maximum_score']) {
-            return response()->json([
-                'message' => __('Сумма баллов по каждому вопросу не может быть меньше максимального балла за тест.')
             ],400);
         }
 
@@ -82,24 +93,15 @@ class TestsController extends Controller {
             ],400);
         }
 
-        $testTimeSec = $data['maximum_time_min'] * 60 + $data['maximum_time_sec'];
-
-        $totalQuestions['min'] = array_sum($data['question_maximum_time_min']);
-        $totalQuestions['sec'] = array_sum($data['question_maximum_time_sec']);
+        $testTimeSec = (int) $data['maximum_time_min'] * 60 + (int) $data['maximum_time_sec'];
+        $totalQuestions['min'] = !empty($data['question_maximum_time_min']) ? array_sum($data['question_maximum_time_min']) : 0;
+        $totalQuestions['sec'] = !empty($data['question_maximum_time_sec']) ? array_sum($data['question_maximum_time_sec']) : 0;
         $totalQuestionsTime = $totalQuestions['min'] * 60 + $totalQuestions['sec'];
 
-        if($testTimeSec != $totalQuestionsTime) {
+        if($totalQuestionsTime > $testTimeSec) {
             return response()->json([
-                'message' => __('Время выполнения теста не может отличаться от общего времени ответа по каждому вопросу.')
+                'message' => __('Время выполнения теста не может быть меньше от общего времени ответа по каждому вопросу.')
             ],400);
-        }
-
-        foreach ($data['question'] as $key => $question) {
-            $questions[] = [
-                'id' => (int) $question,
-                'score' => (int) $data['question_score'][$key],
-                'time' => $data['question_maximum_time_min'][$key] * 60 + $data['question_maximum_time_sec'][$key]
-            ];
         }
 
         $dataCreate = [
@@ -107,12 +109,13 @@ class TestsController extends Controller {
             'title' => $data['title'],
             'description' => $data['descriptions'],
             'maximum_time' => $testTimeSec,
-            'maximum_score' => $data['test_maximum_score'],
+            'maximum_score' => $questionsTotalScore,
             'passing_score' => $data['test_passing_score'],
             'skipping' => isset($data['skipping']) && $data['skipping'] == 'on' ? 1 : 0,
             'ranging' => isset($data['ranging']) && $data['ranging'] == 'on' ? 1 : 0,
             'questions' => $questions ?? [],
         ];
+
 
         Tests::create($dataCreate);
 
@@ -121,31 +124,109 @@ class TestsController extends Controller {
         ]);
     }
 
-    public function show(Tests $tests) {
-        return $tests;
+    public function show(Tests $test, $memberId) {
+        try {
+            $auth = Cache::get($memberId);
+            if($test->portal != $auth->portal) return view('errorAccess');
+            return view('certification.tests.show', [
+                'auth' => $auth,
+                'test' => $test,
+                'questions' => Questions::where('portal', $auth->portal)->get()->toArray(),
+            ]);
+        } catch (Exception $exception) {
+            report($exception);
+            abort($exception->getCode(), $exception->getMessage());
+        }
     }
 
-    public function update(Request $request, Tests $tests) {
+    public function update(Request $request, Tests $test) {
+
         $data = $request->validate([
-            'title' => ['required'],
-            'descriptions' => ['required'],
-            'maximum_score' => ['required', 'integer'],
-            'passing_score' => ['required', 'integer'],
-            'unanswered' => ['boolean'],
-            'skipping' => ['boolean'],
-            'ranging' => ['boolean'],
-            'questions' => ['required'],
-            'maximum_time' => ['required', 'integer'],
+            'portal' => ['required', 'integer', 'exists:bitrix_portals,id'],
+            'title' => ['required', 'string'],
+            'maximum_time_min' => ['required', 'string', 'min:0', 'max:59'],
+            'maximum_time_sec' => ['required', 'string', 'min:0', 'max:59'],
+            'test_passing_score' => ['required', 'integer', 'min:1'],
+            'descriptions' => ['nullable', 'string'],
+            'question_maximum_time_min' => ['nullable', 'array'],
+            'question_maximum_time_sec' => ['nullable', 'array'],
+            'question_score' => ['required', 'array'],
+            'question' => ['required', 'array'],
+            'skipping' => ['nullable', 'string'],
+            'ranging' => ['nullable', 'string'],
         ]);
 
-        $tests->update($data);
+        $questionsTotalScore = 0;
+        foreach ($data['question'] as $key => $question) {
 
-        return $tests;
+            if ($question == 'null') {
+                return response()->json([
+                    'message' => __('Выбор вопроса является обязательным')
+                ],400);
+            }
+
+            $questions[] = [
+                'id' => (int) $question,
+                'score' => (int) $data['question_score'][$key],
+                'time' => ((int) $data['question_maximum_time_min'][$key] ?? 0) * 60 + ((int) $data['question_maximum_time_sec'][$key] ?? 0)
+            ];
+            $questionsTotalScore += (int) $data['question_score'][$key];
+        }
+
+        if($questionsTotalScore < $data['test_passing_score']) {
+            return response()->json([
+                'message' => __('Максимальный балл за тест, не может быть меньше чем проходной балл')
+            ],400);
+        }
+
+        if(count($data['question_score']) != count($data['question'])) {
+            return response()->json([
+                'message' => __('Запрещено публиковать вопросы без оценки и\или указывать оценку без указания вопроса.')
+            ],400);
+        }
+
+        $countRepeatQuestions = array_filter(array_count_values($data['question']), function ($element) {
+            return $element > 1;
+        });
+
+        if(!empty($countRepeatQuestions)) {
+            return response()->json([
+                'message' => __('В тесте запрещено указывать вопрос более одного раза.')
+            ],400);
+        }
+
+        $testTimeSec = (int) $data['maximum_time_min'] * 60 + (int) $data['maximum_time_sec'];
+        $totalQuestions['min'] = !empty($data['question_maximum_time_min']) ? array_sum($data['question_maximum_time_min']) : 0;
+        $totalQuestions['sec'] = !empty($data['question_maximum_time_sec']) ? array_sum($data['question_maximum_time_sec']) : 0;
+        $totalQuestionsTime = $totalQuestions['min'] * 60 + $totalQuestions['sec'];
+
+        if($totalQuestionsTime > $testTimeSec) {
+            return response()->json([
+                'message' => __('Время выполнения теста не может быть меньше от общего времени ответа по каждому вопросу.')
+            ],400);
+        }
+
+        $dataUpdate = [
+            'portal' => (int) $data['portal'],
+            'title' => $data['title'],
+            'description' => $data['descriptions'],
+            'maximum_time' => $testTimeSec,
+            'maximum_score' => $questionsTotalScore,
+            'passing_score' => (int) $data['test_passing_score'],
+            'skipping' => isset($data['skipping']) && $data['skipping'] == 'on' ? 1 : 0,
+            'ranging' => isset($data['ranging']) && $data['ranging'] == 'on' ? 1 : 0,
+            'questions' => $questions ?? [],
+        ];
+
+        $test->update($dataUpdate);
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 
-    public function destroy(Tests $tests) {
-        $tests->delete();
-
-        return response()->json();
+    public function destroy(Tests $test) {
+        $test->delete();
+        return redirect()->back();
     }
 }
