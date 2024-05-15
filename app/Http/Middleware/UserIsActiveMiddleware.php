@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Cache;
 class UserIsActiveMiddleware {
     public function handle(Request $request, Closure $next) {
         try {
-            $auth = Cache::get($request->route()->parameter('member_id'));
-            if(empty($auth)) return response()->view('errorAuth');
+            $auth = Cache::get($request->route()->parameter('auth_id'));
+            if(empty($auth)) return redirect()->route('login');
             if(!$auth->active && !$auth->is_admin) return response()->view('errorAccess');
             return $next($request);
         } catch (Exception $exception) {
