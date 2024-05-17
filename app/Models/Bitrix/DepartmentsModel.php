@@ -29,16 +29,6 @@ class DepartmentsModel extends Model {
         return DepartmentsModel::count();
     }
 
-    public function getManagersFormatAttribute() {
-        if(empty($this->managers)) return __('Не указаны');
-        $managersString = "";
-        foreach ($this->managers as $manager) {
-            $managerInfo = User::find($manager);
-            $managersString .= $managerInfo->name."<br>";
-        }
-        return $managersString;
-    }
-
     public function departmentNameByID($departmentID, int $portalID): string {
         return $departmentID ? DepartmentsModel::where('portal', $portalID)->where('bitrix_id', $departmentID)->first()->name : __('Не указан');
     }
