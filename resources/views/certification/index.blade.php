@@ -12,6 +12,13 @@
                 <a href="#" class="nav-link">{{ __('Главная') }}</a>
             </li>
         </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" target="_blank" href="{{ config('app.url')."/home/".$auth->auth_id }}">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </a>
+            </li>
+        </ul>
     </nav>
     @include('certification.chunk.sidebar')
     <div class="content-wrapper">
