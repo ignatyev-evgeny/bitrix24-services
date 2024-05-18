@@ -16,33 +16,84 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class BitrixController extends Controller {
+    // https://monkey.bitrix24.ru/oauth/authorize/?client_id=local.6621555f3ead38.99934649
     public function install(Request $request) {
         try {
-            if(empty($request['DOMAIN'])) throw new Exception(__('Ошибка при получении домена портала'));
-            if(empty($request['AUTH_ID'])) throw new Exception(__('Ошибка при получении ключа аутентификации'));
-            $data = [
-                'DOMAIN' => $request['DOMAIN'],
-                'AUTH_ID' => $request['AUTH_ID'],
-                'MEMBER_ID' => $request['member_id'],
-                'PORTAL_ID' => self::createPortal($request['DOMAIN'])['id'] ?? null,
-                'REQUEST' => $request->all(),
-            ];
-            if(empty($data['PORTAL_ID'])) throw new Exception(__('Ошибка создании портала'));
+            self::log("Request from Bitrix24 -> ".collect($request->toArray())->toJson());
+            $data = empty($request->code) ? self::authUserIframe($request->all()) : self::authUseroAuth($request->all());
+            if(empty($data)) throw new Exception('Ошибка авторизации');
             self::loadDepartments($data);
             self::loadUsers($data);
             $currentMember = self::getCurrentMember($data);
             if(empty($currentMember['member']['response']['ID']) || empty($currentMember['member']['local']['id'])) throw new Exception(__('Ошибка при получении или создании текущего пользователя'));
             $data['USER'] = $currentMember;
             $data['ADMIN'] = self::checkIsAdmin($data, $currentMember)['isAdmin'] ?? false;
-            Cache::put($data['MEMBER_ID'], User::find($currentMember['member']['local']['id']), now()->addMinutes((int) config('session.lifetime')));
+            Cache::put($data['AUTH_ID'], User::find($currentMember['member']['local']['id']), now()->addMinutes((int) config('session.lifetime')));
             return redirect()->route('home', [
-                'member_id' => $data['MEMBER_ID']
+                'auth_id' => $data['AUTH_ID']
             ]);
         } catch (Exception $exception) {
             report($exception);
-            abort(403, $exception->getMessage());
+            return view('errorAuth');
         }
     }
+
+    private function authUserIframe(array $request): array {
+        try {
+            if(empty($request['DOMAIN'])) throw new Exception(__('Ошибка при получении домена портала'));
+            if(empty($request['AUTH_ID'])) throw new Exception(__('Ошибка при получении ключа аутентификации'));
+            DB::beginTransaction();
+            $data = [
+                'DOMAIN' => $request['DOMAIN'],
+                'AUTH_ID' => $request['AUTH_ID'],
+                'REFRESH_ID' => $request['REFRESH_ID'],
+                'MEMBER_ID' => $request['member_id'],
+                'PORTAL_ID' => self::createPortal($request['DOMAIN'])['id'] ?? null,
+                'REQUEST' => $request,
+            ];
+            DB::commit();
+            if(empty($data['PORTAL_ID'])) throw new Exception(__('Ошибка создании портала'));
+            return $data;
+        } catch (Exception $exception) {
+            DB::rollBack();
+            report($exception);
+            return [];
+        }
+    }
+    private function authUseroAuth(array $request): array {
+        try {
+            if(empty($request['code'])) throw new Exception(__('Ошибка oAuth авторизации пользователя, не передан -> code'));
+            if(empty($request['domain'])) throw new Exception(__('Ошибка oAuth авторизации пользователя, не передан -> domain'));
+            DB::beginTransaction();
+            $oAuthCheck = Http::get("https://oauth.bitrix.info/oauth/token/", [
+                'grant_type' => 'authorization_code',
+                'client_id' => 'local.6621555f3ead38.99934649',
+                'client_secret' => 'mTdpb8wDUdn7UPEWxuFZ9HCXaSdhv4n9wqd78TkCM5GIwy4J6a',
+                'code' => $request['code'],
+            ])->json();
+            $exceptionMessage = !empty($oAuthCheck['error_description']) ? $oAuthCheck['error_description'] : __('Ошибка oAuth авторизации пользователя, не передан -> access_token');
+            if(empty($oAuthCheck['access_token'])) throw new Exception($exceptionMessage);
+            $data = [
+                'DOMAIN' => $request['domain'],
+                'AUTH_ID' => $oAuthCheck['access_token'],
+                'REFRESH_ID' => $oAuthCheck['refresh_token'],
+                'MEMBER_ID' => $oAuthCheck['member_id'],
+                'PORTAL_ID' => self::createPortal($request['domain'])['id'] ?? null,
+                'REQUEST' => [
+                    'request' => $request,
+                    'oAuth' => $oAuthCheck
+                ],
+            ];
+            DB::commit();
+            if(empty($data['PORTAL_ID'])) throw new Exception(__('Ошибка создании портала'));
+            return $data;
+        } catch (Exception $exception) {
+            DB::rollBack();
+            report($exception);
+            return [];
+        }
+    }
+
     private function createPortal(string $domain) {
         try {
             DB::beginTransaction();
@@ -117,7 +168,7 @@ class BitrixController extends Controller {
 
 
     }
-    private function getCurrentMember(array $data) {
+    private function getCurrentMember(array $data): array {
         try {
             DB::beginTransaction();
             $currentMember = self::sendRequest($data, 'user.current');
@@ -125,9 +176,9 @@ class BitrixController extends Controller {
             $currentMember = $currentMember['result'];
             $localUser = User::whereBitrixId($currentMember['ID'])->first();
             if(empty($localUser)) throw new Exception(__('Пользователь не найден локально'));
-            $localUser->auth_id = $data['REQUEST']['AUTH_ID'];
-            $localUser->refresh_id = $data['REQUEST']['REFRESH_ID'];
-            $localUser->member_id = $data['REQUEST']['member_id'];
+            $localUser->auth_id = $data['AUTH_ID'];
+            $localUser->refresh_id = $data['REFRESH_ID'];
+            $localUser->member_id = $data['MEMBER_ID'];
             $localUser->auth = $data['REQUEST'];
             $localUser->save();
             DB::commit();
@@ -141,7 +192,7 @@ class BitrixController extends Controller {
         } catch (Exception $exception) {
             DB::rollBack();
             report($exception);
-            return null;
+            return [];
         }
     }
     private function checkIsAdmin(array $data, array $currentMember) {
@@ -172,9 +223,9 @@ class BitrixController extends Controller {
             $start = 0;
             $response['result'] = $response['time'] = [];
             do {
-                self::log("Request URL [{$endpoint}] -> https://{$data['DOMAIN']}/rest/$endpoint.json?auth={$data['AUTH_ID']}&start=".$start);
+                //self::log("Request URL [{$endpoint}] -> https://{$data['DOMAIN']}/rest/$endpoint.json?auth={$data['AUTH_ID']}&start=".$start);
                 $currentResponse = Http::get("https://{$data['DOMAIN']}/rest/$endpoint.json?auth={$data['AUTH_ID']}&start=".$start)->json();
-                self::log("Request Response [{$endpoint}] -> ".json_encode($currentResponse).PHP_EOL);
+                //self::log("Request Response [{$endpoint}] -> ".json_encode($currentResponse).PHP_EOL);
                 $fullResponse[] = $currentResponse;
                 $start = !empty($currentResponse['next']) ? $currentResponse['next'] : 0;
             } while (!empty($currentResponse['next']) && is_array($currentResponse['result']));
