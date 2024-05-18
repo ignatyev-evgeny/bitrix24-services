@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 class UserIsAdminOrSupportMiddleware {
     public function handle(Request $request, Closure $next) {
         try {
-            $auth = Cache::get($request->route()->parameter('member_id'));
+            $auth = Cache::get($request->route()->parameter('auth_id'));
             if(empty($auth)) return response()->view('errorAuth');
             if(!$auth->is_admin && !$auth->is_support) return response()->view('errorAccess');
             return $next($request);
