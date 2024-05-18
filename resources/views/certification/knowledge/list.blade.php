@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+@include('certification.chunk.head')
+@include('certification.chunk.script')
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="{{ route('home', ['auth_id' => $auth->auth_id]) }}" class="nav-link">{{ __('Главная') }}</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" target="_blank" href="{{ config('app.url')."/home/".$auth->auth_id }}">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    @include('certification.chunk.sidebar')
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">{{ __('База знаний') }}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{{ route('home', ['auth_id' => $auth->auth_id]) }}">{{ __('Главная') }}</a></li>
+                            <li class="breadcrumb-item active">{{ __('База знаний') }}</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="{{ route('knowledge.create', ['auth_id' => $auth->auth_id]) }}" class="btn btn-app ml-0 mb-0">
+                                    <i class="fas fa-plus"></i> {{ __('Создать') }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <table id="myTable" class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">ID</th>
+                                        <th class="text-center">{{ __('Название') }}</th>
+                                        <th class="text-center">{{ __('Тегов') }}</th>
+                                        <th class="text-center">{{ __('Вопросов') }}</th>
+                                        <th class="text-center">{{ __('Тестов') }}</th>
+                                        <th class="text-center">{{ __('Управление') }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @if(count($knowledge) != 0)
+                                        @foreach($knowledge as $article)
+                                            <tr class="tr-{{ $article->id }}">
+                                                <td class="text-center align-middle">{{ $article->id }}</td>
+                                                <td class="align-middle">{{ $article->title }}</td>
+                                                <td class="text-center align-middle">{{ $article->id }}</td>
+                                                <td class="text-center align-middle">{{ $article->id }}</td>
+                                                <td class="text-center align-middle">{{ $article->id }}</td>
+                                                <td class="text-center align-middle">
+                                                    <div class="btn-group">
+{{--                                                        <a href="{{ route('knowledge.show', ['auth_id' => $auth->auth_id, 'knowledge' => $article->id]) }}">--}}
+{{--                                                            <button type="button" class="btn btn-warning">--}}
+{{--                                                                <i class="fas fa-edit"></i>--}}
+{{--                                                            </button>--}}
+{{--                                                        </a>--}}
+                                                        <a href="{{ route('knowledge.preview', ['auth_id' => $auth->auth_id, 'knowledge' => $article->id]) }}">
+                                                            <button type="button" class="btn btn-primary ml-2">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                        </a>
+{{--                                                        <button type="button" data-knowledge-id="{{ $article->id }}" data-knowledge-title="{{ $article->title }}" data-toggle="modal" data-target="#modalDeleteKnowledge" class="btn openModalDeleteKnowledge btn-danger ml-2">--}}
+{{--                                                            <i class="fas fa-trash-alt"></i>--}}
+{{--                                                        </button>--}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td class="text-center align-middle" colspan="20">
+                                                <b>{{ __('Нет данных для отображения') }}</b>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer">
+                                {{ $knowledge->links('pagination::bootstrap-4') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <aside class="control-sidebar control-sidebar-dark"></aside>
+
+    <div class="modal fade" id="modalDeleteQuestion">
+        <div class="modal-dialog">
+            <div class="modal-content bg-danger">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ __('Вы уверены что хотите удалить вопрос?')  }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>{{ __('Данным действием вы удалите вопрос') }} - <b id="questionTitle"></b></p>
+                    <p>{{ __('Удаление вопросы будет разрешено только в том случае, если выбранный вопрос не используется ни в одном из тестов. Это условие будет проверено на следующем этапе удаления вопроса.') }}</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-light closeDeleteModal" data-dismiss="modal">{{ __('Закрыть') }}</button>
+                    <button type="button" data-question-id="" class="btn btn-outline-light confirmDeleteQuestion">{{ __('Да, удалить!') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('.openModalDeleteQuestion').on('click', function () {
+            var questionTitle = $(this).attr('data-question-title');
+            var questionID = $(this).attr('data-question-id');
+            $('#questionTitle').html(questionTitle);
+            $('.confirmDeleteQuestion').attr('data-question-id', questionID);
+        })
+
+        $('.confirmDeleteQuestion').on('click', function () {
+            var questionID = $(this).attr('data-question-id');
+            $(this).prop('disabled', true);
+
+            var request = $.ajax({
+                url: "/questions/destroy/"+questionID+"/{{ $auth->auth_id }}",
+                type: 'POST',
+                dataType: 'JSON',
+            })
+
+            request.done(function( data ) {
+                $('.confirmDeleteQuestion').prop('disabled', false);
+                $('.closeDeleteModal').click();
+                $('.tr-'+questionID).remove();
+                toastr.success(data.message);
+            });
+
+            request.fail(function( data ) {
+                $('.confirmDeleteQuestion').prop('disabled', false);
+                $('.closeDeleteModal').click();
+                toastr.error(data.responseJSON.message);
+            });
+
+        })
+
+    </script>
+
+    @include('certification.chunk.footer')
+</div>
+</body>
+</html>
