@@ -58,7 +58,7 @@
                                 <table id="myTable" class="table table-striped table-bordered">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">#</th>
+                                            <th class="text-center">ID</th>
                                             <th class="text-center">{{ __('Название') }}</th>
                                             <th class="text-center">{{ __('Время выполнения') }}</th>
                                             <th class="text-center">{{ __('Максимальный бал') }}</th>
@@ -66,6 +66,7 @@
                                             <th class="text-center">{{ __('Пропуск вопроса') }}</th>
                                             <th class="text-center">{{ __('Ранжирование') }}</th>
                                             <th class="text-center">{{ __('Кол-во вопросов') }}</th>
+                                            <th class="text-center">{{ __('Попыток') }}</th>
                                             <th class="text-center">{{ __('Действия') }}</th>
                                         </tr>
                                     </thead>
@@ -81,6 +82,7 @@
                                                 <td class="text-center align-middle">{{ $test->skipping ? __('Да') : __('Нет') }}</td>
                                                 <td class="text-center align-middle">{{ $test->ranging ? __('Да') : __('Нет') }}</td>
                                                 <td class="text-center align-middle">{{ $test->questions_count }}</td>
+                                                <td class="text-center align-middle">{{ $test->attempts ?? 0 }}</td>
                                                 <td class="text-center align-middle">
                                                     <div class="btn-group">
                                                         <a href="{{ route('tests.show', ['auth_id' => $auth->auth_id, 'test' => $test->id]) }}">

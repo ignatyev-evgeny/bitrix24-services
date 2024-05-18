@@ -18,6 +18,7 @@ class Tests extends Model {
         'ranging',
         'questions',
         'maximum_time',
+        'attempts',
     ];
 
     public function getQuestionsCountAttribute(): int {

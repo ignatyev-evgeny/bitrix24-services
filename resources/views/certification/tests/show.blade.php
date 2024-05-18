@@ -90,13 +90,17 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-4">
+                                                <div class="form-group col-3">
                                                     <label>{{ __('Максимальный балл') }}</label>
                                                     <input type="number" class="form-control maxTestScore" disabled value="{{ $test->total_questions_score }}">
                                                 </div>
-                                                <div class="form-group col-4">
+                                                <div class="form-group col-3">
                                                     <label>{{ __('Проходной балл') }}</label>
                                                     <input type="number" class="form-control" value="{{ $test->passing_score }}" name="test_passing_score" >
+                                                </div>
+                                                <div class="form-group col-2">
+                                                    <label>{{ __('Попыток') }}</label>
+                                                    <input type="number" class="form-control" value="{{ $test->attempts }}" name="attempts" >
                                                 </div>
                                             </div>
                                             <div class="form-group">

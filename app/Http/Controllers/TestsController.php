@@ -52,6 +52,7 @@ class TestsController extends Controller {
             'question' => ['required', 'array'],
             'skipping' => ['nullable', 'string'],
             'ranging' => ['nullable', 'string'],
+            'attempts' => ['required', 'integer', 'min:0', 'max:100'],
         ]);
 
         $questionsTotalScore = 0;
@@ -114,6 +115,7 @@ class TestsController extends Controller {
             'skipping' => isset($data['skipping']) && $data['skipping'] == 'on' ? 1 : 0,
             'ranging' => isset($data['ranging']) && $data['ranging'] == 'on' ? 1 : 0,
             'questions' => $questions ?? [],
+            'attempts' => $data['attempts'],
         ];
 
 
@@ -154,6 +156,7 @@ class TestsController extends Controller {
             'question' => ['required', 'array'],
             'skipping' => ['nullable', 'string'],
             'ranging' => ['nullable', 'string'],
+            'attempts' => ['required', 'integer', 'min:0', 'max:100'],
         ]);
 
         $questionsTotalScore = 0;
@@ -216,6 +219,7 @@ class TestsController extends Controller {
             'skipping' => isset($data['skipping']) && $data['skipping'] == 'on' ? 1 : 0,
             'ranging' => isset($data['ranging']) && $data['ranging'] == 'on' ? 1 : 0,
             'questions' => $questions ?? [],
+            'attempts' => $data['attempts'],
         ];
 
         $test->update($dataUpdate);
