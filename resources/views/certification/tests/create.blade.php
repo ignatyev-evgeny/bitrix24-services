@@ -16,7 +16,14 @@
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a href="{{ route('home', ['member_id' => $auth->member_id]) }}" class="nav-link">{{ __('Главная') }}</a>
+                <a href="{{ route('home', ['auth_id' => $auth->auth_id]) }}" class="nav-link">{{ __('Главная') }}</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" target="_blank" href="{{ config('app.url')."/home/".$auth->auth_id }}">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </a>
             </li>
         </ul>
     </nav>
@@ -30,7 +37,7 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ route('home', ['member_id' => $auth->member_id]) }}">{{ __('Главная') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('home', ['auth_id' => $auth->auth_id]) }}">{{ __('Главная') }}</a></li>
                             <li class="breadcrumb-item active">{{ __('Новый тест') }}</li>
                         </ol>
                     </div>
@@ -91,48 +98,49 @@
                                                     <input type="number" class="form-control" value="0" name="test_passing_score" >
                                                 </div>
                                             </div>
+
+                                        </div>
+                                        <div class="col-6">
                                             <div class="form-group">
                                                 <label>{{ __('Описание теста') }}</label>
                                                 <textarea id="testText" name="descriptions"></textarea>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="row mb-2">
                                         <div class="col-6">
-                                            <div class="row mb-2">
-                                                <div class="col-6">
-                                                    <button type="button" data-question="0" class="btn btn-success addQuestion btn-block">{{ __('Добавить вопрос') }}</button>
-                                                </div>
-                                                <div class="col-6">
-                                                    <button type="button" class="btn btn-danger deleteQuestion disabled btn-block">{{ __('Удалить последний вопрос') }}</button>
+                                            <button type="button" data-question="0" class="btn btn-success addQuestion btn-block">{{ __('Добавить вопрос') }}</button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button type="button" class="btn btn-danger deleteQuestion disabled btn-block">{{ __('Удалить последний вопрос') }}</button>
+                                        </div>
+                                    </div>
+                                    <div class="questionsBlock mt-3">
+                                        <div class="row">
+                                            <div class="form-group col-1">
+                                                <label>{{ __('Время вопроса (ММ:СС)') }}</label>
+                                                <div class="row">
+                                                    <div class="col-5">
+                                                        <input type="number" min="0" max="59" value="0" class="form-control question_time" name="question_maximum_time_min[0]">
+                                                    </div>
+                                                    <div class="col-1 text-center lh-38-px">:</div>
+                                                    <div class="col-6">
+                                                        <input type="number" min="0" max="59" value="0" class="form-control question_time" name="question_maximum_time_sec[0]">
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="questionsBlock mt-3">
-                                                <div class="row">
-                                                    <div class="form-group col-4">
-                                                        <label>{{ __('Время вопроса (ММ:СС)') }}</label>
-                                                        <div class="row">
-                                                            <div class="col-5">
-                                                                <input type="number" min="0" max="59" value="0" class="form-control question_time" name="question_maximum_time_min[0]">
-                                                            </div>
-                                                            <div class="col-1 text-center lh-38-px">:</div>
-                                                            <div class="col-6">
-                                                                <input type="number" min="0" max="59" value="0" class="form-control question_time" name="question_maximum_time_sec[0]">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group col-2">
-                                                        <label>{{ __('Оценка') }}</label>
-                                                        <input type="number" name="question_score[0]" value="0" class="form-control questionScore">
-                                                    </div>
-                                                    <div class="form-group col-6">
-                                                        <label>{{ __('Вопрос') }}</label>
-                                                        <select class="form-control select2" name="question[0]" style="width: 100%;">
-                                                            <option value="null" selected="selected">{{ __('Выберите вопрос') }}</option>
-                                                            @foreach($questions as $question)
-                                                                <option value="{{ $question['id'] }}">{{ $question['title'] }} {{ !empty($question['tags']) ? '#'.implode(' #', $question['tags']) : null }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
+                                            <div class="form-group col-1">
+                                                <label>{{ __('Оценка') }}</label>
+                                                <input type="number" name="question_score[0]" value="1" class="form-control questionScore">
+                                            </div>
+                                            <div class="form-group col-10">
+                                                <label>{{ __('Вопрос') }}</label>
+                                                <select class="form-control select2" name="question[0]" style="width: 100%;">
+                                                    <option value="null" selected="selected">{{ __('Выберите вопрос') }}</option>
+                                                    @foreach($questions as $question)
+                                                        <option value="{{ $question['id'] }}">{{ $question['title'] }} {{ !empty($question['tags']) ? '#'.implode(' #', $question['tags']) : null }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -157,7 +165,7 @@
     <script>
         $(document).ready(function() {
             $('#testText').summernote({
-                height: 300,
+                minHeight: 110,
             });
 
             $('.addQuestion').on('click', function () {
@@ -166,7 +174,7 @@
                 var skippingQuestionCheckedStatus = $(".skippingQuestion").is(":checked");
 
                 $(this).attr('data-question', currentQuestion);
-                $('.questionsBlock').append('<div class="row question"><div class="form-group col-4"><div class="row"><div class="col-5"><input type="number" min="0" max="59" value="0" class="form-control question_time" name="question_maximum_time_min['+currentQuestion+']"></div><div class="col-1 text-center lh-38-px">:</div><div class="col-6"><input type="number" min="0" max="59" value="0" class="form-control question_time" name="question_maximum_time_sec['+currentQuestion+']"></div></div></div><div class="form-group col-2"><input type="number" value="0" name="question_score['+currentQuestion+']" class="form-control questionScore"></div><div class="form-group col-6"><select class="form-control select2" name="question['+currentQuestion+']" style="width: 100%;"><option value="null" selected="selected">{{ __('Выберите вопрос') }}</option>@foreach($questions as $question)<option value="{{ $question['id'] }}">{{ $question['title'] }} {{ !empty($question['tags']) ? '#'.implode(' #', $question['tags']) : null }}</option>@endforeach</select></div></div>');
+                $('.questionsBlock').append('<div class="row question"><div class="form-group col-1"><div class="row"><div class="col-5"><input type="number" min="0" max="59" value="0" class="form-control question_time" name="question_maximum_time_min['+currentQuestion+']"></div><div class="col-1 text-center lh-38-px">:</div><div class="col-6"><input type="number" min="0" max="59" value="0" class="form-control question_time" name="question_maximum_time_sec['+currentQuestion+']"></div></div></div><div class="form-group col-1"><input type="number" value="1" name="question_score['+currentQuestion+']" class="form-control questionScore"></div><div class="form-group col-10"><select class="form-control select2" name="question['+currentQuestion+']" style="width: 100%;"><option value="null" selected="selected">{{ __('Выберите вопрос') }}</option>@foreach($questions as $question)<option value="{{ $question['id'] }}">{{ $question['title'] }} {{ !empty($question['tags']) ? '#'.implode(' #', $question['tags']) : null }}</option>@endforeach</select></div></div>');
                 $('.deleteQuestion').removeClass('disabled');
                 $('.select2').select2();
                 if(skippingQuestionCheckedStatus === true) {
@@ -174,6 +182,13 @@
                 } else {
                     $('.question_time').val(0).attr('disabled', false);
                 }
+
+                var maxTestScore = 0;
+                $(".questionScore").each(function( index ) {
+                    maxTestScore = maxTestScore + parseInt($(this).val());
+                });
+                $('.maxTestScore').val(maxTestScore);
+
             })
 
             $('.deleteQuestion').on('click', function () {
@@ -185,6 +200,13 @@
                     $('.deleteQuestion').addClass('disabled');
                     $('.addQuestion').attr('data-question', 0);
                 }
+
+                var maxTestScore = 0;
+                $(".questionScore").each(function( index ) {
+                    maxTestScore = maxTestScore + parseInt($(this).val());
+                });
+                $('.maxTestScore').val(maxTestScore);
+
             })
 
             $('.btnSave').click(function() {
@@ -192,7 +214,7 @@
                 $(this).prop('disabled', true);
 
                 var request = $.ajax({
-                    url: "{{ route('tests.store', ['member_id' => $auth->member_id]) }}",
+                    url: "{{ route('tests.store', ['auth_id' => $auth->auth_id]) }}",
                     type: 'POST',
                     dataType: 'JSON',
                     data: $('form#newTestForm').serialize(),

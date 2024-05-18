@@ -16,7 +16,14 @@
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a href="{{ route('home', ['member_id' => $auth->member_id]) }}" class="nav-link">{{ __('Главная') }}</a>
+                <a href="{{ route('home', ['auth_id' => $auth->auth_id]) }}" class="nav-link">{{ __('Главная') }}</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" target="_blank" href="{{ config('app.url')."/home/".$auth->auth_id }}">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </a>
             </li>
         </ul>
     </nav>
@@ -30,8 +37,8 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ route('home', ['member_id' => $auth->member_id]) }}">{{ __('Главная') }}</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('tests.list', ['member_id' => $auth->member_id]) }}">{{ __('Тесты') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('home', ['auth_id' => $auth->auth_id]) }}">{{ __('Главная') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('tests.list', ['auth_id' => $auth->auth_id]) }}">{{ __('Тесты') }}</a></li>
                             <li class="breadcrumb-item active">{{ __('Редактирование теста') }}</li>
                         </ol>
                     </div>
@@ -205,7 +212,7 @@
                 var testID = $(this).attr('data-test-id');
 
                 var request = $.ajax({
-                    url: "/tests/update/"+testID+"/{{ $auth->member_id }}",
+                    url: "/tests/update/"+testID+"/{{ $auth->auth_id }}",
                     type: 'POST',
                     dataType: 'JSON',
                     data: $('form#updateTestForm').serialize(),
