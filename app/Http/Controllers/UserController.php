@@ -9,11 +9,11 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller {
-    public function getUsers($memberId) {
+    public function getUsers($authId) {
         try {
-            $auth = Cache::get($memberId);
+            $auth = Cache::get($authId);
             return view('certification.users.list', [
-                'users' => User::with('portalObject')->where('portal', $auth->portal)->paginate(25),
+                'users' => User::with('portalObject')->where('portal', $auth->portal)->get(),
                 'auth' => $auth,
             ]);
         } catch (Exception $exception) {
@@ -21,9 +21,9 @@ class UserController extends Controller {
             abort($exception->getCode(), $exception->getMessage());
         }
     }
-    public function updateActive(Request $request, $memberId) {
+    public function updateActive(Request $request, $authId) {
         try {
-            $auth = Cache::get($memberId);
+            $auth = Cache::get($authId);
             if(!isset($request->currentStatus) || !in_array($request->currentStatus, [0, 1])) throw new Exception(__('Новый статус не передан. Или переданный статус не является разрешенным'), 403);
             $user = User::find($request->userID);
             if(empty($user)) throw new Exception(__('Пользователь не найден'), 404);
@@ -45,9 +45,9 @@ class UserController extends Controller {
             abort($exception->getCode(), $exception->getMessage());
         }
     }
-    public function updateIsSupport(Request $request, $memberId) {
+    public function updateIsSupport(Request $request, $authId) {
         try {
-            $auth = Cache::get($memberId);
+            $auth = Cache::get($authId);
             if(!isset($request->isSupportStatus) || !in_array($request->isSupportStatus, [0, 1])) throw new Exception(__('Статус роли пользователя не передан. Или переданный статус роли не является разрешенным'), 403);
             $user = User::find($request->userID);
             if(empty($user)) throw new Exception(__('Пользователь не найден'), 404);

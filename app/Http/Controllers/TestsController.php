@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Cache;
 
 class TestsController extends Controller {
 
-    public function list($memberId) {
+    public function list($authId) {
         try {
-            $auth = Cache::get($memberId);
+            $auth = Cache::get($authId);
             return view('certification.tests.list', [
-                'tests' => Tests::where('portal', $auth->portal)->paginate(10),
-                'auth' => Cache::get($memberId)
+                'tests' => Tests::where('portal', $auth->portal)->get(),
+                'auth' => Cache::get($authId)
             ]);
         } catch (Exception $exception) {
             report($exception);
@@ -23,9 +23,9 @@ class TestsController extends Controller {
         }
     }
 
-    public function create($memberId) {
+    public function create($authId) {
         try {
-            $auth = Cache::get($memberId);
+            $auth = Cache::get($authId);
             return view('certification.tests.create', [
                 'auth' => $auth,
                 'questions' => Questions::where('portal', $auth->portal)->get()->toArray(),
@@ -66,7 +66,7 @@ class TestsController extends Controller {
             $questions[] = [
                 'id' => (int) $question,
                 'score' => (int) $data['question_score'][$key],
-                'time' => ((int) $data['question_maximum_time_min'][$key] ?? 0) * 60 + ((int) $data['question_maximum_time_sec'][$key] ?? 0)
+                'time' => (isset($data['question_maximum_time_min'][$key]) ? (int) $data['question_maximum_time_min'][$key] : 0) * 60 + (isset($data['question_maximum_time_sec'][$key]) ? (int) $data['question_maximum_time_sec'][$key] : 0)
             ];
             $questionsTotalScore += (int) $data['question_score'][$key];
         }
@@ -124,9 +124,9 @@ class TestsController extends Controller {
         ]);
     }
 
-    public function show(Tests $test, $memberId) {
+    public function show(Tests $test, $authId) {
         try {
-            $auth = Cache::get($memberId);
+            $auth = Cache::get($authId);
             if($test->portal != $auth->portal) return view('errorAccess');
             return view('certification.tests.show', [
                 'auth' => $auth,
@@ -168,7 +168,7 @@ class TestsController extends Controller {
             $questions[] = [
                 'id' => (int) $question,
                 'score' => (int) $data['question_score'][$key],
-                'time' => ((int) $data['question_maximum_time_min'][$key] ?? 0) * 60 + ((int) $data['question_maximum_time_sec'][$key] ?? 0)
+                'time' => (isset($data['question_maximum_time_min'][$key]) ? (int) $data['question_maximum_time_min'][$key] : 0) * 60 + (isset($data['question_maximum_time_sec'][$key]) ? (int) $data['question_maximum_time_sec'][$key] : 0)
             ];
             $questionsTotalScore += (int) $data['question_score'][$key];
         }
