@@ -21,6 +21,14 @@ class Questions extends Model {
         return $this->time > 0 ? floor($this->time / 60)." : ".$this->time % 60 : __('Неограниченно');
     }
 
+    public function getFormatTimeMinAttribute(): string {
+        return $this->time > 0 ? floor($this->time / 60) : 0;
+    }
+
+    public function getFormatTimeSecAttribute(): string {
+        return $this->time > 0 ? $this->time % 60 : 0;
+    }
+
     protected function casts() {
         return [
             'answers' => 'array',

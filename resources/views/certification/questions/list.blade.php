@@ -10,7 +10,14 @@
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a href="{{ route('home', ['member_id' => $auth->member_id]) }}" class="nav-link">{{ __('Главная') }}</a>
+                <a href="{{ route('home', ['auth_id' => $auth->auth_id]) }}" class="nav-link">{{ __('Главная') }}</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" target="_blank" href="{{ config('app.url')."/home/".$auth->auth_id }}">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </a>
             </li>
         </ul>
     </nav>
@@ -24,7 +31,7 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ route('home', ['member_id' => $auth->member_id]) }}">{{ __('Главная') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('home', ['auth_id' => $auth->auth_id]) }}">{{ __('Главная') }}</a></li>
                             <li class="breadcrumb-item active">{{ __('Вопросы') }}</li>
                         </ol>
                     </div>
@@ -38,7 +45,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <a href="{{ route('questions.create', ['member_id' => $auth->member_id]) }}" class="btn btn-app ml-0 mb-0">
+                                <a href="{{ route('questions.create', ['auth_id' => $auth->auth_id]) }}" class="btn btn-app ml-0 mb-0">
                                     <i class="fas fa-plus"></i> {{ __('Создать') }}
                                 </a>
                             </div>
@@ -49,10 +56,11 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
-                                <table class="table table-bordered">
+
+                                <table id="myTable" class="table table-striped table-bordered">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">#</th>
+                                            <th class="text-center">ID</th>
                                             <th class="text-center">{{ __('Название') }}</th>
                                             <th class="text-center">{{ __('Время на ответ') }}</th>
                                             <th class="text-center">{{ __('Теги') }}</th>
@@ -60,47 +68,44 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if(!empty($questions))
-                                            @foreach($questions as $question)
-                                                <tr class="tr-{{ $question->id }}">
-                                                    <td class="text-center align-middle">{{ $question->id }}</td>
-                                                    <td class="text-center align-middle">{{ $question->title }}</td>
-                                                    <td class="text-center align-middle">{{ $question->format_time }}</td>
-                                                    <td class="text-center align-middle">
-                                                        @isset($question->tags)
-                                                            @foreach($question->tags as $tag)
-                                                                <small class="badge badge-success">{{ $tag }}</small>
-                                                            @endforeach
-                                                        @else
-                                                            {{ __('Не указаны') }}
-                                                        @endisset
-                                                    </td>
-                                                    <td class="text-center align-middle">
-                                                        <div class="btn-group">
-                                                            <a href="{{ route('questions.show', ['member_id' => $auth->member_id, 'question' => $question->id]) }}">
-                                                                <button type="button" class="btn btn-warning">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                            </a>
-                                                            <button type="button" data-question-id="{{ $question->id }}" data-question-title="{{ $question->title }}" data-toggle="modal" data-target="#modalDeleteQuestion" class="btn openModalDeleteQuestion btn-danger ml-2">
-                                                                <i class="fas fa-trash-alt"></i>
+                                    @if(!empty($questions))
+                                        @foreach($questions as $question)
+                                            <tr class="tr-{{ $question->id }}">
+                                                <td class="text-center align-middle">{{ $question->id }}</td>
+                                                <td class="align-middle">{{ $question->title }}</td>
+                                                <td class="text-center align-middle">{{ $question->format_time }}</td>
+                                                <td class="align-middle">
+                                                    @isset($question->tags)
+                                                        @foreach($question->tags as $tag)
+                                                            <small class="badge badge-success">{{ $tag }}</small>
+                                                        @endforeach
+                                                    @else
+                                                        {{ __('Не указаны') }}
+                                                    @endisset
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    <div class="btn-group">
+                                                        <a href="{{ route('questions.show', ['auth_id' => $auth->auth_id, 'question' => $question->id]) }}">
+                                                            <button type="button" class="btn btn-warning">
+                                                                <i class="fas fa-edit"></i>
                                                             </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @else
-                                            <tr>
-                                                <td class="text-center align-middle" colspan="4">
-                                                    <b>{{ __('Нет данных для отображения') }}</b>
+                                                        </a>
+                                                        <button type="button" data-question-id="{{ $question->id }}" data-question-title="{{ $question->title }}" data-toggle="modal" data-target="#modalDeleteQuestion" class="btn openModalDeleteQuestion btn-danger ml-2">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
-                                        @endif
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td class="align-middle" colspan="4">
+                                                <b>{{ __('Нет данных для отображения') }}</b>
+                                            </td>
+                                        </tr>
+                                    @endif
                                     </tbody>
                                 </table>
-                            </div>
-                            <div class="card-footer">
-                                {{ $questions->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
                     </div>
@@ -132,6 +137,7 @@
     </div>
 
     <script>
+
         $('.openModalDeleteQuestion').on('click', function () {
             var questionTitle = $(this).attr('data-question-title');
             var questionID = $(this).attr('data-question-id');
@@ -144,7 +150,7 @@
             $(this).prop('disabled', true);
 
             var request = $.ajax({
-                url: "/questions/destroy/"+questionID+"/{{ $auth->member_id }}",
+                url: "/questions/destroy/"+questionID+"/{{ $auth->auth_id }}",
                 type: 'POST',
                 dataType: 'JSON',
             })

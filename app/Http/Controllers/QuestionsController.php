@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class QuestionsController extends Controller {
-    public function list($memberId) {
+    public function list($authId) {
         try {
-            $auth = Cache::get($memberId);
+            $auth = Cache::get($authId);
             return view('certification.questions.list', [
-                'questions' => Questions::where('portal', $auth->portal)->paginate(10),
-                'auth' => Cache::get($memberId)
+                'questions' => Questions::where('portal', $auth->portal)->get(),
+                'auth' => Cache::get($authId)
             ]);
         } catch (Exception $exception) {
             report($exception);
@@ -22,10 +22,10 @@ class QuestionsController extends Controller {
         }
     }
 
-    public function create($memberId) {
+    public function create($authId) {
         try {
             return view('certification.questions.create', [
-                'auth' => Cache::get($memberId)
+                'auth' => Cache::get($authId)
             ]);
         } catch (Exception $exception) {
             report($exception);
@@ -39,9 +39,9 @@ class QuestionsController extends Controller {
             'portal' => ['required', 'integer', 'exists:bitrix_portals,id'],
             'title' => ['required', 'string'],
             'text' => ['required', 'string'],
-            'time_min' => ['required', 'integer', 'min:0', 'max:59'],
-            'time_sec' => ['required', 'integer', 'min:0', 'max:59'],
-            'serializedTags' => ['nullable', 'string'],
+            'time_min' => ['required', 'string', 'min:0', 'max:59'],
+            'time_sec' => ['required', 'string', 'min:0', 'max:59'],
+            'tags' => ['nullable', 'array'],
             'answerText' => ['required', 'array'],
             'correctAnswer' => ['required', 'array'],
         ]);
@@ -59,7 +59,7 @@ class QuestionsController extends Controller {
             'time' => $data['time_min'] * 60 + $data['time_sec'],
             'title' => $data['title'],
             'text' => $data['text'],
-            'tags' => !empty($data['serializedTags']) ? explode(',', $data['serializedTags']) : null,
+            'tags' => $data['tags'] ?? null,
             'answers' => $answerArr,
         ];
 
@@ -72,14 +72,15 @@ class QuestionsController extends Controller {
 
     }
 
-    public function show(Questions $question, $memberId) {
-        $auth = Cache::get($memberId);
+    public function show(Questions $question, $authId, Request $request) {
+        $auth = Cache::get($authId);
         try {
             if(empty($question)) throw new Exception(__("Выбранный вопрос не существует"));
             if($auth->portal != $question->portal) throw new Exception(__("у Вас нет доступа для редактирования вопроса"));
             return view('certification.questions.show', [
-                'auth' => Cache::get($memberId),
-                'question' => $question
+                'auth' => Cache::get($authId),
+                'question' => $question,
+                'request' => $request->all(),
             ]);
         } catch (Exception $exception) {
             report($exception);
@@ -90,18 +91,20 @@ class QuestionsController extends Controller {
         }
     }
 
-    public function update(Request $request, Questions $question, $memberId) {
+    public function update(Request $request, Questions $question, $authId) {
         try {
             $data = $request->validate([
                 'portal' => ['required', 'integer', 'exists:bitrix_portals,id'],
                 'title' => ['required', 'string'],
                 'text' => ['required', 'string'],
-                'serializedTags' => ['nullable', 'string'],
+                'time_min' => ['required', 'string', 'min:0', 'max:59'],
+                'time_sec' => ['required', 'string', 'min:0', 'max:59'],
+                'tags' => ['nullable', 'array'],
                 'answerText' => ['required', 'array'],
                 'correctAnswer' => ['required', 'array'],
             ]);
 
-            $auth = Cache::get($memberId);
+            $auth = Cache::get($authId);
             if(empty($question)) throw new Exception(__("Выбранный вопрос не существует"));
             if($auth->portal != $question->portal) throw new Exception(__("у Вас нет доступа для редактирования вопроса"));
 
@@ -115,16 +118,17 @@ class QuestionsController extends Controller {
 
             $dataUpdate = [
                 'portal' => $data['portal'],
+                'time' => $data['time_min'] * 60 + $data['time_sec'],
                 'title' => $data['title'],
                 'text' => $data['text'],
-                'tags' => !empty($data['serializedTags']) ? explode(',', $data['serializedTags']) : null,
+                'tags' => $data['tags'] ?? null,
                 'answers' => $answerArr,
             ];
 
             $question->update($dataUpdate);
 
             return redirect()->route('questions.show', [
-                'member_id' => $memberId,
+                'auth_id' => $authId,
                 'question' => $question->id
             ])->with([
                 'success' => true
@@ -134,7 +138,7 @@ class QuestionsController extends Controller {
             report($exception);
 
             return redirect()->route('questions.show', [
-                'member_id' => $memberId,
+                'auth_id' => $authId,
                 'question' => $question->id
             ])->with([
                 'error' => true
@@ -142,7 +146,7 @@ class QuestionsController extends Controller {
         }
     }
 
-    public function destroy(Questions $question, $memberId) {
+    public function destroy(Questions $question, $authId) {
 
         if(empty($question)) {
             return response()->json([
@@ -150,7 +154,7 @@ class QuestionsController extends Controller {
             ], 404);
         }
 
-        $auth = Cache::get($memberId);
+        $auth = Cache::get($authId);
 
         if($auth->portal != $question->portal) {
             return response()->json([
