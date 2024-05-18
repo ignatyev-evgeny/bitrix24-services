@@ -1,5 +1,6 @@
 body {
     font-family: "Montserrat", sans-serif !important;
+    font-size: 0.9rem;
 }
 
 label {
@@ -42,4 +43,12 @@ label {
 .error-page>.error-content {
     margin-left: 200px !important;
     padding-top: 20px !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #007bff !important;
+    border-color: #006fe6 !important;
+    color: #fff !important;
+    padding: 0 10px !important;
+    margin-top: .31rem !important;
 }
