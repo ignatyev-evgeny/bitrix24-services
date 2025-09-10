@@ -1,66 +1,199 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Certification System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Система аттестации сотрудников, интегрированная с Bitrix24.
 
-## About Laravel
+## Описание проекта
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Веб-приложение для создания и проведения аттестаций сотрудников с возможностью создания тестов, вопросов, базы знаний и управления группами пользователей. Система интегрируется с Bitrix24 для авторизации и получения информации о сотрудниках.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Основные возможности
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🏢 Управление пользователями
+- Автоматическая синхронизация пользователей из Bitrix24
+- Управление статусами пользователей (активный/неактивный)
+- Назначение ролей (администратор, поддержка)
+- Просмотр информации о подразделениях
 
-## Learning Laravel
+### 👥 Группы сотрудников
+- Создание групп сотрудников
+- Назначение менеджеров подразделений
+- Управление составом групп
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### ❓ Система вопросов
+- Создание вопросов с множественными вариантами ответов
+- Поддержка HTML-форматирования текста вопросов
+- Настройка времени на ответ
+- Система тегов для категоризации
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 📝 Система тестирования
+- Создание тестов из созданных вопросов
+- Настройка параметров тестов:
+  - Максимальное время выполнения
+  - Проходной балл
+  - Количество попыток
+  - Возможность пропуска вопросов
+  - Ранжирование вопросов
+- Автоматический подсчет баллов
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 📚 База знаний
+- Создание статей с HTML-редактором
+- Связывание статей с вопросами и тестами
+- Система тегов
+- Предварительный просмотр статей
 
-## Laravel Sponsors
+## Технические характеристики
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Стек технологий
+- **Backend**: Laravel 11
+- **Frontend**: Bootstrap 4, jQuery, AdminLTE
+- **База данных**: SQLite (по умолчанию)
+- **Кеширование**: Database cache
+- **Очереди**: Database queue
 
-### Premium Partners
+### Системные требования
+- PHP 8.2+
+- Composer
+- Node.js и npm
+- SQLite или MySQL/PostgreSQL
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Установка и настройка
 
-## Contributing
+### 1. Клонирование репозитория
+```bash
+git clone <repository-url>
+cd certification-system
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Установка зависимостей
+```bash
+# Установка PHP зависимостей
+composer install
 
-## Code of Conduct
+# Установка Node.js зависимостей
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Настройка окружения
+```bash
+# Копирование файла конфигурации
+cp .env.example .env
 
-## Security Vulnerabilities
+# Генерация ключа приложения
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Настройка базы данных
+```bash
+# Создание базы данных SQLite
+touch database/database.sqlite
 
-## License
+# Выполнение миграций
+php artisan migrate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 5. Сборка фронтенда
+```bash
+npm run build
+```
+
+### 6. Настройка кеша
+```bash
+php artisan optimize
+```
+
+## Конфигурация Bitrix24
+
+### Настройка OAuth приложения
+1. В Bitrix24 перейдите в "Приложения" → "Разработчикам"
+2. Создайте новое локальное приложение
+3. Укажите следующие параметры:
+   - **URL обработчика**: `https://your-domain.com/services/bitrix/certification/install`
+   - **Права доступа**: 
+     - Пользователи (user)
+     - Подразделения (department)
+
+### Переменные окружения для Bitrix24
+```env
+# В файле .env добавьте:
+BITRIX_CLIENT_ID=your_client_id
+BITRIX_CLIENT_SECRET=your_client_secret
+```
+
+## Структура проекта
+
+### Основные контроллеры
+- `MainController` - главная страница и навигация
+- `BitrixController` - интеграция с Bitrix24
+- `UserController` - управление пользователями
+- `DepartmentsController` - управление подразделениями
+- `QuestionsController` - управление вопросами
+- `TestsController` - управление тестами
+- `KnowledgeController` - база знаний
+- `UsersGroupsController` - группы пользователей
+
+### Модели данных
+- `User` - пользователи системы
+- `Questions` - вопросы для тестов
+- `Tests` - тесты
+- `Knowledge` - статьи базы знаний
+- `UsersGroups` - группы пользователей
+- `DepartmentsModel` - подразделения Bitrix24
+- `PortalsModel` - порталы Bitrix24
+
+### Middleware
+- `UserIsActiveMiddleware` - проверка активности пользователя
+- `UserIsAdminMiddleware` - проверка прав администратора
+- `UserIsAdminOrSupportMiddleware` - проверка прав администратора или поддержки
+
+## Основные маршруты
+
+### Авторизация
+- `GET /login` - страница входа
+- `POST /oAuth/bitrix/login` - OAuth авторизация через Bitrix24
+- `GET|POST /services/bitrix/certification/install` - установка приложения
+
+### Основные разделы
+- `GET /home/{auth_id}` - главная страница
+- `GET /users/{auth_id}` - управление пользователями
+- `GET /departments/{auth_id}` - управление подразделениями
+
+### API эндпоинты
+- `POST /user/updateActive/{auth_id}` - изменение статуса пользователя
+- `POST /departments/setManagers/{auth_id}` - назначение менеджеров
+
+## Развертывание
+
+### Продакшен сервер
+1. Настройте веб-сервер (Apache/Nginx)
+2. Укажите корневую директорию на `public/`
+3. Настройте SSL сертификат
+4. Настройте cron для выполнения задач Laravel
+
+### GitHub Actions
+В проекте настроен автоматический деплой через GitHub Actions:
+```yaml
+# .github/workflows/main.yml
+# Автоматически выполняется:
+# - git pull
+# - composer install
+# - php artisan migrate --force
+# - php artisan optimize
+```
+
+## Логирование
+
+Система ведет логи в следующих каналах:
+- `laravel.log` - основные логи приложения
+- `Bitrix/{date}/request.log` - логи запросов к Bitrix24
+
+## Безопасность
+
+### Аутентификация
+- Авторизация через Bitrix24 OAuth
+- Сессии хранятся в базе данных
+- Автоматическое истечение сессий
+
+### Права доступа
+- Трехуровневая система ролей: пользователь, поддержка, администратор
+- Middleware для проверки прав доступа
+- Изоляция данных по порталам
